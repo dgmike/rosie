@@ -23,6 +23,14 @@ router.get('/', (req, res) => {
   });
 });
 
-router.get('/services', (req, res) => {
-  res.status(501).end('501 Not Implemented');
+router.get('/services', async (req, res) => {
+  const { Service, ServiceType } = req.app.locals.models;
+
+  return Service
+    .findAll({
+      include: [ServiceType],
+    })
+    .then((results) => {
+      res.json(results);
+    });
 });

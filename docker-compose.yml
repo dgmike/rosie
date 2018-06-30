@@ -4,4 +4,19 @@ services:
   app:
     build: .
     ports:
-      - 80
+      - 3001:3001
+    environment:
+      - DB_HOSTNAME=mysql://username:password@database/database
+      - NODE_ENV=development
+      - PORT=3001
+    volumes:
+      - ./app:/app
+  database:
+    image: mysql:5
+    environment:
+      - MYSQL_USER=username
+      - MYSQL_PASSWORD=password
+      - MYSQL_DATABASE=database
+      - MYSQL_ROOT_PASSWORD=root
+    volumes:
+      - ./database:/var/lib/mysql
