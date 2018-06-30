@@ -11,6 +11,7 @@ services:
       - PORT=3001
     volumes:
       - ./app:/app
+    command: nodemon
   database:
     image: mysql:5
     environment:

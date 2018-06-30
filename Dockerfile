@@ -3,6 +3,7 @@ FROM node:10.5-alpine
 LABEL MAINTAINER='Michael Granados <michael.granados@catho.com>'
 
 RUN mkdir /app && chown node:node /app
+RUN npm i --global nodemon
 
 ENV WORKDIR /app
 WORKDIR $WORKDIR
