@@ -14,6 +14,27 @@ if (config.use_env_variable) {
   var sequelize = new Sequelize(config.database, config.username, config.password, config);
 }
 
+Sequelize.Model.info = function () {
+  const info = Object
+    .entries(this.attributes)
+    .reduce((summary, iteration) => {
+      const [col, attr] = iteration;
+
+      summary[col] = {
+        type: attr.type.key.toLowerCase(),
+        required: attr.required,
+        description: attr.comment
+      };
+
+      if (attr.type._length) {
+        summary[col].length = attr.type._length;
+      }
+      return summary;
+    }, {})
+
+  return info;
+}
+
 fs
   .readdirSync(__dirname)
   .filter(file => {

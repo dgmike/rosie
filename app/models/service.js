@@ -3,7 +3,18 @@ const { url } = require('../heplers');
 
 module.exports = (sequelize, DataTypes) => {
   var Service = sequelize.define('Service', {
-    name: DataTypes.STRING
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: null,
+      comment: 'Service name',
+    },
+    ServiceTypeId: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      allowNull: false,
+      defaultValue: null,
+      comment: 'Associated service type',
+    }
   }, {});
 
   Service.associate = function(models) {

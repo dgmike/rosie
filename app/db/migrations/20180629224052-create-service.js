@@ -9,10 +9,12 @@ module.exports = {
         type: Sequelize.INTEGER.UNSIGNED
       },
       name: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false,
       },
       ServiceTypeId: {
         type: Sequelize.INTEGER.UNSIGNED,
+        allowNull: false,
         onDelete: 'CASCADE',
         references: {
           model: 'ServiceTypes',

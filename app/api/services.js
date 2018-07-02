@@ -49,9 +49,7 @@ router.get('/services', (req, res) => {
       }
 
       res.json({
-        _links: {
-          self: selfUrl,
-        },
+        _links: { self: selfUrl },
         offset,
         limit,
         resourceType: 'ResourceList',
@@ -61,12 +59,104 @@ router.get('/services', (req, res) => {
     });
 });
 
-router.get('/services/:id', (req, res) => {
+router.get('/services/info', async (req, res) => {
+  const { Service } = req.app.locals.models;
+  return res.json(Service.info());
+});
+
+router.post('/services', async (req, res) => {
+  const { Service } = req.app.locals.models;
+  const { body } = req;
+
+  const service = new Service();
+
+  Object.keys(Service.attributes)
+    .filter(attr => attr !== 'id')
+    .filter(attr => attr in (body || {}))
+    .forEach((attr) => {
+      console.log(`${attr} = ${body[attr]}`)
+      result[attr] = body[attr];
+    });
+
+  try {
+    const result = await service.save();
+    res.status(201).json(result.representation(req));
+  } catch (err) {
+    if (typeof err == 'SequelizeValidationError') {
+      return res.status(422).json(err);
+    } else {
+      const message = err.message;
+      return res.status(500).json({ message, err });
+    }
+  }
+});
+
+router.get('/services/:id', async (req, res, next) => {
+  if (req.params.id === 'info') {
+    return next();
+  }
+
   const { Service, ServiceType } = req.app.locals.models;
 
-  Service
-    .findById(req.params.id, {
-      include: [ServiceType],
-    })
-    .then(result => res.json(result.representation(req)))
+  const result = await Service.findById(
+    req.params.id,
+    { include: [ServiceType] }
+  );
+
+  if (!result) {
+    res.status(404).json({ status: 404 });
+    return false;
+  }
+
+  res.json(result.representation(req));
+});
+
+router.put('/services/:id', async (req, res, next) => {
+  const { Service, ServiceType } = req.app.locals.models;
+  const { body } = req;
+  const result = await Service.findById(req.params.id);
+
+  if (!result) {
+    res.status(404).json({ status: 404 });
+    return false;
+  }
+
+  Object.keys(Service.attributes)
+    .filter(attr => attr !== 'id')
+    .filter(attr => attr in (body || {}))
+    .forEach((attr) => {
+      console.log(`${attr} = ${body[attr]}`)
+      result[attr] = body[attr];
+    });
+
+  try {
+    result.save();
+    res.json(result.representation(req));
+  } catch (err) {
+    if (typeof err == 'SequelizeValidationError') {
+      return res.status(422).json(err);
+    } else {
+      const message = err.message;
+      return res.status(500).json({ message, err });
+    }
+  }
+});
+
+router.delete('/services/:id', async (req, res, next) => {
+  const { Service, ServiceType } = req.app.locals.models;
+  const { body } = req;
+  const result = await Service.findById(req.params.id);
+
+  if (!result) {
+    res.status(404).json({ status: 404 });
+    return false;
+  }
+
+ try {
+   result.destroy();
+   res.status(204).end();
+ } catch (err) {
+   const message = err.message;
+   return res.status(500).json({ message, err });
+ }
 });
