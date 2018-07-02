@@ -16,6 +16,8 @@ module.exports = {
             .map(() => {
               return {
                 name: chance.city(),
+                description: chance.paragraph(),
+                source: 'https://gitlab.devel/x-force/project',
                 serviceTypeId: item.id,
                 createdAt: now,
                 updatedAt: now,

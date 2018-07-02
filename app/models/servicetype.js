@@ -27,8 +27,8 @@ module.exports = (sequelize, DataTypes) => {
     resource._embedded = {};
 
     resource._links = {
-      self: { href: url(req, `/services-types/${this.id}`) },
-      serviceTypes: { href: url(req, '/services-types') },
+      self: { href: url(req, `/service-types/${this.id}`) },
+      serviceTypes: { href: url(req, '/service-types') },
     };
 
     if (!Object.keys(resource._embedded).length) {

@@ -14,7 +14,13 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: null,
       comment: 'Associated service type',
-    }
+    },
+    source: {
+      type: DataTypes.STRING,
+    },
+    description: {
+      type: DataTypes.TEXT,
+    },
   }, {});
 
   Service.associate = function(models) {

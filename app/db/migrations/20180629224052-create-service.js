@@ -21,6 +21,12 @@ module.exports = {
           key: 'id'
         }
       },
+      source: {
+        type: Sequelize.STRING,
+      },
+      description: {
+        type: Sequelize.TEXT
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

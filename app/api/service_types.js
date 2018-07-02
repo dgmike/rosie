@@ -6,11 +6,11 @@ const router = express.Router();
 
 exports.router = router;
 
-router.get('/services', (req, res) => {
-  const { Service, ServiceType } = req.app.locals.models;
+router.get('/service-types', (req, res) => {
+  const { ServiceType } = req.app.locals.models;
 
   const { limit, offset } = queryLimits(req);
-  const { name, type } = req.query;
+  const { name } = req.query;
 
   const where = {};
 
@@ -20,15 +20,8 @@ router.get('/services', (req, res) => {
     };
   }
 
-  if (type) {
-    where.ServiceTypeId = {
-      [Op.eq]: type,
-    }
-  }
-
-  Service
+  ServiceType
     .findAndCount({
-      include: [ServiceType],
       limit,
       offset,
       where,
@@ -40,18 +33,15 @@ router.get('/services', (req, res) => {
       };
     })
     .then((results) => {
-      let selfUrl = url(req, `/services?limit=${limit}&offset=${offset}`);
+      let selfUrl = url(req, `/service-types?limit=${limit}&offset=${offset}`);
       if (name) {
         selfUrl += `&name=${encodeURIComponent(name)}`;
-      }
-      if (type) {
-        selfUrl += `&type=${encodeURIComponent(type)}`;
       }
 
       res.json({
         _links: {
           self: selfUrl,
-          info: url(req, '/service/info'),
+          info: url(req, '/service-types/info'),
         },
         offset,
         limit,
@@ -62,18 +52,18 @@ router.get('/services', (req, res) => {
     });
 });
 
-router.get('/services/info', async (req, res) => {
-  const { Service } = req.app.locals.models;
-  return res.json(Service.info());
+router.get('/service-types/info', async (req, res) => {
+  const { ServiceType } = req.app.locals.models;
+  return res.json(ServiceType.info());
 });
 
-router.post('/services', async (req, res) => {
-  const { Service } = req.app.locals.models;
+router.post('/service-types', async (req, res) => {
+  const { ServiceType } = req.app.locals.models;
   const { body } = req;
 
-  const service = new Service();
+  const serviceType = new ServiceType();
 
-  Object.keys(Service.attributes)
+  Object.keys(ServiceType.attributes)
     .filter(attr => attr !== 'id')
     .filter(attr => attr in (body || {}))
     .forEach((attr) => {
@@ -82,7 +72,7 @@ router.post('/services', async (req, res) => {
     });
 
   try {
-    const result = await service.save();
+    const result = await serviceType.save();
     res.status(201).json(result.representation(req));
   } catch (err) {
     if (typeof err == 'SequelizeValidationError') {
@@ -94,16 +84,15 @@ router.post('/services', async (req, res) => {
   }
 });
 
-router.get('/services/:id', async (req, res, next) => {
+router.get('/service-types/:id', async (req, res, next) => {
   if (req.params.id === 'info') {
     return next();
   }
 
-  const { Service, ServiceType } = req.app.locals.models;
+  const { ServiceType } = req.app.locals.models;
 
-  const result = await Service.findById(
+  const result = await ServiceType.findById(
     req.params.id,
-    { include: [ServiceType] }
   );
 
   if (!result) {
@@ -114,17 +103,17 @@ router.get('/services/:id', async (req, res, next) => {
   res.json(result.representation(req));
 });
 
-router.put('/services/:id', async (req, res, next) => {
-  const { Service, ServiceType } = req.app.locals.models;
+router.put('/service-types/:id', async (req, res, next) => {
+  const { ServiceType } = req.app.locals.models;
   const { body } = req;
-  const result = await Service.findById(req.params.id);
+  const result = await ServiceType.findById(req.params.id);
 
   if (!result) {
     res.status(404).json({ status: 404 });
     return false;
   }
 
-  Object.keys(Service.attributes)
+  Object.keys(ServiceType.attributes)
     .filter(attr => attr !== 'id')
     .filter(attr => attr in (body || {}))
     .forEach((attr) => {
@@ -145,10 +134,10 @@ router.put('/services/:id', async (req, res, next) => {
   }
 });
 
-router.delete('/services/:id', async (req, res, next) => {
-  const { Service, ServiceType } = req.app.locals.models;
+router.delete('/service-types/:id', async (req, res, next) => {
+  const { ServiceType } = req.app.locals.models;
   const { body } = req;
-  const result = await Service.findById(req.params.id);
+  const result = await ServiceType.findById(req.params.id);
 
   if (!result) {
     res.status(404).json({ status: 404 });
