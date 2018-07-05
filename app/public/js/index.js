@@ -36,7 +36,7 @@
   }
 
   function wrapTable(html) {
-    return `<table>
+    return `<table class="table table-striped table-hover">
       <thead>
         <tr>
           <th>ID</th>

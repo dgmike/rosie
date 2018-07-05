@@ -9,10 +9,14 @@ router.get('/', (req, res) => {
   res.redirect('/dashboard');
 });
 
-router.get('/services', (req, res) => {
-  res.redirect('/dashboard');
+router.get('/servicos', (req, res) => {
+  res.render('servicos.html');
 });
 
-router.get('/dashboard/services/:id', async (req, res) => {
-  res.render('service.html');
+router.get('/dashboard', (req, res) => {
+  res.redirect('/servicos');
+});
+
+router.get('/dashboard/services/:id', (req, res) => {
+  res.render('servico.html');
 });

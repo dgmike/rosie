@@ -5,7 +5,7 @@ body {
 	font-size: 14px;
 }
 
-table {
+/*table {
 	width: 100%;
 	border-collapse: collapse;
 }
@@ -32,6 +32,7 @@ table tbody tr:nth-child(even) {
 table tbody tr:hover {
 	background: #c1e4f4;
 }
+*/
 
 #pagination {
 	display: flex;

@@ -38,14 +38,35 @@
     }
 
     return `
-      <h2><img src="/img/type/${ServiceType.slug}.png"> ${data.name}</h2>
-      <ul>
-        <li>${source}</li>
-        <li>Tipo: <img src="/img/type/${ServiceType.slug}.png"> ${ServiceType.name}</li>
-        <li>Descrição: ${data.description || 'sem descrição'}</li>
-      </ul>
-
-      <!-- pre><code>${JSON.stringify(data, null, 2)}</code></pre -->
+      <div class="row">
+        <div class="col-sm-8">
+          <h2>${data.name}</h2>
+          <ul>
+            <li>${source}</li>
+            <li>Tipo: <img src="/img/type/${ServiceType.slug}.png"> ${ServiceType.name}</li>
+            <li>Descrição: ${data.description || 'sem descrição'}</li>
+          </ul>
+        </div>
+        <div class="col-sm-4">
+          <div class="card rounded shadow-sm p-3 mb-5">
+            <div class="card-block">
+              <h3 class="card-title">Status</h3>
+              <div class="badge badge-success">ONLINE</div>
+            </div>
+          </div>
+          <div class="card rounded shadow-sm p-3 mb-5 mt-4">
+            <div class="card-block">
+              <h3 class="card-title">Dependencias</h3>
+              <div class="list-group list-group-flush">
+                <div class="list-group-item">conline</div>
+                <div class="list-group-item">api-juros</div>
+                <a class="list-group-item list-group-item-action text-primary" href="#">api-companies</a></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+        <!-- pre><code>${JSON.stringify(data, null, 2)}</code></pre -->
     `;
   }
 
