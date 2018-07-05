@@ -51,7 +51,7 @@ router.get('/services', (req, res) => {
       res.json({
         _links: {
           self: selfUrl,
-          info: url(req, '/service/info'),
+          info: url(req, '/services/info'),
         },
         offset,
         limit,
