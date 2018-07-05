@@ -17,14 +17,7 @@ app.locals.models = models;
 app.use(bodyParser.json());
 app.use(serveStatic('public'))
 
-app.engine('html', (path, options, callback) => {
-	console.log(path)
-  util
-    .promisify(fs.readFile)
-    .call(null, path)
-    .then(buffer => buffer.toString())
-    .then(str => callback(false, str));
-});
+app.set('view engine', 'pug');
 
 app.use('/api', api.router);
 app.use('/', frontend.router);

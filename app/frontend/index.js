@@ -10,7 +10,7 @@ router.get('/', (req, res) => {
 });
 
 router.get('/servicos', (req, res) => {
-  res.render('servicos.html');
+  res.render('servicos');
 });
 
 router.get('/dashboard', (req, res) => {
@@ -18,5 +18,5 @@ router.get('/dashboard', (req, res) => {
 });
 
 router.get('/dashboard/services/:id', (req, res) => {
-  res.render('servico.html');
+  res.render('servico');
 });

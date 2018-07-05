@@ -1,0 +1,66 @@
+doctype
+
+html.no-js
+  head
+    meta(charset="utf-8")/
+    title
+      | Rosie -
+      |
+      block page_title
+        | Página
+
+    link(rel="icon",href="/favicon.ico")/
+    link(rel="stylesheet",href="/bootstrap/css/bootstrap.min.css")/
+    link(rel="stylesheet",href="//use.fontawesome.com/releases/v5.1.0/css/all.css",integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt",crossorigin="anonymous")/
+    link(rel="stylesheet",href="/bootstrap/css/style.css")/
+    block head
+
+  body
+    #wrapper.container-fluid
+      .row
+        nav.sidebar.col-xs-12.col-sm-4.col-lg-3.col-xl-2
+          h1.site-title
+            a(href='/')
+              em.fas.fa-robot
+              |  Rosie
+          ul.nav.nav-pills.flex-column.sidebar-nav
+            li.nav-item
+              a.d-flex.nav-link(href='/tipos-de-servicos')
+                em.fas.fa-file-alt.text-center(style="width:30px")
+                span.d-inline-block
+                  |  Guia
+            li.nav-item
+              a.d-flex.nav-link(href='/servicos')
+                em.fa.fa-cog.text-center(style="width:30px")
+                span.d-inline-block
+                  |  Serviços
+            li.nav-item
+              a.d-flex.nav-link(href='/tipos-de-servicos')
+                em.fas.fa-cogs.text-center(style="width:30px")
+                span.d-inline-block
+                  |  Tipos de serviços
+            li.nav-item
+              a.d-flex.nav-link(href='/atributos')
+                em.fas.fa-swatchbook.text-center(style="width:30px")
+                span.d-inline-block
+                  |  Atributos
+            li.nav-item
+              a.d-flex.nav-link(href='/etiquetas')
+                em.fas.fa-tags.text-center(style="width:30px")
+                span.d-inline-block
+                  |  Etiquetas
+            li.nav-item
+              a.d-flex.nav-link(href='/responsaveis')
+                em.fas.fa-users.text-center(style="width:30px")
+                span.d-inline-block
+                  |  Responsáveis
+
+        main#main-page.col-xs-12.col-sm-8.col-lg-9.col-xl-10.pt-3.pl-4.ml-auto
+          header.page-header
+            h2.text-md-left.border-0.p-0
+              block page_title
+                | Página
+            .clear
+          block content
+
+    block footer
