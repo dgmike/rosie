@@ -1,2 +1,3 @@
 app/node_modules
 database
+/app/public/js/app.js

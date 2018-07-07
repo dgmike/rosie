@@ -6,17 +6,5 @@ const router = express.Router();
 exports.router = router;
 
 router.get('/', (req, res) => {
-  res.redirect('/dashboard');
-});
-
-router.get('/servicos', (req, res) => {
-  res.render('servicos');
-});
-
-router.get('/dashboard', (req, res) => {
-  res.redirect('/servicos');
-});
-
-router.get('/dashboard/services/:id', (req, res) => {
-  res.render('servico');
+  res.render('index');
 });
