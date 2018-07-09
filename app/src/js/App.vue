@@ -1,7 +1,14 @@
 <template>
   <div class="page">
     <div class="page-title">{{ page.title }}</div>
-    Hello from Vue.
+
+    <router-link :to="{ name: 'dashboard' }">Dashboard</router-link>
+    <router-link :to="{ name: 'services' }">Serviços</router-link>
+
+    <router-view></router-view>
+    <footer>
+      Rodapé
+    </footer>
   </div>
 </template>
 
@@ -11,11 +18,6 @@ import { mapState } from 'vuex';
 export default {
   name: 'App',
   components: {},
-  created() {
-    this.$store.state.page = {
-      title: 'Dashboard',
-    };
-  },
   computed: mapState(['page']),
 };
 </script>
