@@ -33,7 +33,7 @@
                 </mdc-layout-inner-grid>
                 <mdc-layout-inner-grid>
                   <mdc-layout-cell desktop="2" class="text-right">Código-fonte</mdc-layout-cell>
-                  <mdc-layout-cell desktop="10">https://gitlab.devel/xpto</mdc-layout-cell>
+                  <mdc-layout-cell desktop="10">{{resource.source}}</mdc-layout-cell>
                 </mdc-layout-inner-grid>
                 <mdc-layout-inner-grid>
                   <mdc-layout-cell desktop="2" class="text-right">Etiquetas</mdc-layout-cell>
