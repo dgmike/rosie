@@ -1,28 +1,26 @@
 <template>
-<div>
-  <div class="loading" v-if="loading">
-    Loading...
-  </div>
+  <mdc-layout-grid>
+    <mdc-layout-cell desktop="12">
+      <mdc-card class="loading" v-if="loading">
+          <mdc-card-text>
+              Carregando...
+          </mdc-card-text>
+      </mdc-card>
 
-  <div class="error" v-if="error">
-    {{ error }}
-  </div>
+      <mdc-card class="error" v-if="error">
+          <mdc-card-text>
+              {{ error }}
+          </mdc-card-text>
+      </mdc-card>
 
-  <div class="resources" v-if="resources">
-    <table>
-      <thead>
-        <tr>
-          <th>Nome</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="resource in resources.results">
-          <td>{{resource.name}}</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
+      <mdc-list class="resources" v-if="resources" interactive bordered two-line>
+        <mdc-list-item class="resources-item" v-for="resource in resources.results" :key="resource.id" @click="goToResource(resource)">
+          {{resource.name}}
+          <span slot="secondary">{{resource._embedded.ServiceType.name}}</span>
+        </mdc-list-item>
+      </mdc-list>
+    </mdc-layout-cell>
+  </mdc-layout-grid>
 </template>
 
 <script>
@@ -49,6 +47,7 @@ export default {
       that.error = null;
       that.resources = null;
       that.loading = true;
+
       fetch('/api/services')
         .then(res => res.json())
         .then(function (json) {
@@ -59,6 +58,23 @@ export default {
           that.error = err;
         });
     },
+    goToResource(resource) {
+      this.$router.push({
+        name: 'service',
+        params: {
+          id: resource.id,
+        },
+      });
+    },
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.resources {
+  .resources-item {
+    background: #fff;
+    cursor: pointer;
+  }
+}
+</style>
