@@ -44,6 +44,6 @@ export default {
 @import 'vue-mdc-adapter/dist/styles';
 
 .mdc-layout-app--content-wrapper {
-  background: #f5f5f5;
+  background: #f2f2f2;
 }
 </style>

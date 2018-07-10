@@ -6,30 +6,48 @@
               Carregando...
           </mdc-card-text>
       </mdc-card>
+      <div v-else>
+        <mdc-layout-grid>
+          <mdc-layout-cell span="9"></mdc-layout-cell>
+          <mdc-layout-cell span="3">
+            <mdc-textfield v-model="search" label="Buscar" fullwidth trailing-icon="search" @keypress.enter="handleSearchEnterKey"/>
+          </mdc-layout-cell>
+        </mdc-layout-grid>
 
-      <mdc-card class="error" v-if="error">
-          <mdc-card-text>
-              {{ error }}
-          </mdc-card-text>
-      </mdc-card>
+        <mdc-card class="error" v-if="error">
+            <mdc-card-text>
+                {{ error.message }}
+            </mdc-card-text>
+        </mdc-card>
 
-      <mdc-list class="resources" v-if="resources" interactive bordered two-line>
-        <mdc-list-item class="resources-item" v-for="resource in resources.results" :key="resource.id" @click="goToResource(resource)">
-          {{resource.name}}
-          <span slot="secondary">{{resource._embedded.ServiceType.name}}</span>
-        </mdc-list-item>
-      </mdc-list>
+        <div v-if="resources">
+          <mdc-list class="resources" v-if="resources.total" interactive bordered two-line>
+            <mdc-list-item class="resources-item" v-for="resource in resources.results" :key="resource.id" @click="goToResource(resource)">
+              {{resource.name}}
+              <span slot="secondary">{{resource._embedded.ServiceType.name}}</span>
+            </mdc-list-item>
+          </mdc-list>
+          <mdc-card class="error" v-else>
+            <mdc-card-text>
+              <p>Nenhum resultado encontrado.</p>
+            </mdc-card-text>
+          </mdc-card>
+        </div>
+      </div>
     </mdc-layout-cell>
   </mdc-layout-grid>
 </template>
 
 <script>
+import url from 'url';
+
 export default {
   data() {
     return {
       loading: false,
       resources: null,
       error: null,
+      search: '',
     };
   },
   created() {
@@ -42,20 +60,32 @@ export default {
     '$route': 'fetchData'
   },
   methods: {
-    fetchData() {
+    fetchData(search = {}) {
       const that = this;
-      that.error = null;
-      that.resources = null;
-      that.loading = true;
 
-      fetch('/api/services')
+      that.error = null;
+
+      const timeout = setTimeout(() => {
+        that.resources = null;
+        that.loading = true;
+      }, 200);
+
+      const url = new URL('/api/services', new URL(location).origin);
+      url.search = new URLSearchParams(search);
+
+      fetch(url.href)
+        .then((res) => { clearTimeout(timeout); return res; })
         .then(res => res.json())
         .then(function (json) {
-          that.loading = false;
           that.resources = json;
         })
         .catch(function (err) {
           that.error = err;
+          that.resources = null;
+        })
+        .finally(() => {
+          clearTimeout(timeout);
+          that.loading = false;
         });
     },
     goToResource(resource) {
@@ -66,6 +96,9 @@ export default {
         },
       });
     },
+    handleSearchEnterKey() {
+      this.fetchData({ name: this.search });
+    }
   },
 };
 </script>
