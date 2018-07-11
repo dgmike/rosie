@@ -24,29 +24,29 @@
               </mdc-tab-bar>
               <mdc-body v-if="selectedTab==0">
                 <mdc-layout-inner-grid>
-                  <mdc-layout-cell desktop="2" class="text-right">Nome</mdc-layout-cell>
+                  <mdc-layout-cell desktop="2" class="text-right">Nome:</mdc-layout-cell>
                   <mdc-layout-cell desktop="10">{{resource.name}}</mdc-layout-cell>
                 </mdc-layout-inner-grid>
                 <mdc-layout-inner-grid>
-                  <mdc-layout-cell desktop="2" class="text-right">Tipo</mdc-layout-cell>
+                  <mdc-layout-cell desktop="2" class="text-right">Tipo:</mdc-layout-cell>
                   <mdc-layout-cell desktop="10">{{resource._embedded.ServiceType.name}}</mdc-layout-cell>
                 </mdc-layout-inner-grid>
                 <mdc-layout-inner-grid>
-                  <mdc-layout-cell desktop="2" class="text-right">Código-fonte</mdc-layout-cell>
-                  <mdc-layout-cell desktop="10">{{resource.source}}</mdc-layout-cell>
+                  <mdc-layout-cell desktop="2" class="text-right">Código-fonte:</mdc-layout-cell>
+                  <mdc-layout-cell desktop="10"><a :href="resource.source" target="_blank">{{resource.source}}</a></mdc-layout-cell>
                 </mdc-layout-inner-grid>
                 <mdc-layout-inner-grid>
-                  <mdc-layout-cell desktop="2" class="text-right">Etiquetas</mdc-layout-cell>
+                  <mdc-layout-cell desktop="2" class="text-right">Etiquetas:</mdc-layout-cell>
                   <mdc-layout-cell desktop="10">
                     <mdc-list class="tag-list">
-                      <mdc-list-item class="tag-list-item">Uno</mdc-list-item>
-                      <mdc-list-item class="tag-list-item">Dos</mdc-list-item>
-                      <mdc-list-item class="tag-list-item">Tres</mdc-list-item>
+                      <mdc-list-item class="tag-list-item" v-for="tag in resource._embedded.Tags" v-bind:key="tag.id">
+                        {{tag.name}}
+                      </mdc-list-item>
                     </mdc-list>
                   </mdc-layout-cell>
                 </mdc-layout-inner-grid>
                 <mdc-layout-inner-grid>
-                  <mdc-layout-cell desktop="2" class="text-right">Descrição</mdc-layout-cell>
+                  <mdc-layout-cell desktop="2" class="text-right">Descrição:</mdc-layout-cell>
                   <mdc-layout-cell desktop="10">{{resource.description}}</mdc-layout-cell>
                 </mdc-layout-inner-grid>
               </mdc-body>

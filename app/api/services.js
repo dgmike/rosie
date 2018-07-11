@@ -99,11 +99,11 @@ router.get('/services/:id', async (req, res, next) => {
     return next();
   }
 
-  const { Service, ServiceType } = req.app.locals.models;
+  const { Service, ServiceType, Tag } = req.app.locals.models;
 
   const result = await Service.findById(
     req.params.id,
-    { include: [ServiceType] }
+    { include: [ServiceType, Tag] }
   );
 
   if (!result) {
@@ -114,7 +114,7 @@ router.get('/services/:id', async (req, res, next) => {
   res.json(result.representation(req));
 });
 
-router.put('/services/:id', async (req, res, next) => {
+router.put('/services/:id', async (req, res) => {
   const { Service, ServiceType } = req.app.locals.models;
   const { body } = req;
   const result = await Service.findById(req.params.id);
@@ -145,7 +145,7 @@ router.put('/services/:id', async (req, res, next) => {
   }
 });
 
-router.delete('/services/:id', async (req, res, next) => {
+router.delete('/services/:id', async (req, res) => {
   const { Service, ServiceType } = req.app.locals.models;
   const { body } = req;
   const result = await Service.findById(req.params.id);

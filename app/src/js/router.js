@@ -10,7 +10,7 @@ const routes = [
   { path: '/', redirect: '/dashboard' },
   { name: 'dashboard', path: '/dashboard', component: Dashboard },
   { name: 'services', path: '/servicos', component: Services },
-  { name: 'service', path: '/service/:id', component: Service },
+  { name: 'service', path: '/servicos/:id', component: Service },
 ];
 
 const router = new VueRouter({ routes });

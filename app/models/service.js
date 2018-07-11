@@ -28,6 +28,7 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'ServiceTypeId',
       onDelete: 'CASCADE',
     });
+    Service.belongsToMany(models.Tag, { through: 'ServiceTags' });
   };
 
   Service.prototype.representation = function (req) {
@@ -44,6 +45,11 @@ module.exports = (sequelize, DataTypes) => {
     if (resource.ServiceType) {
       delete(resource.ServiceType);
       resource._embedded.ServiceType = this.ServiceType.representation(req);
+    }
+
+    if (resource.Tags) {
+      delete(resource.Tags);
+      resource._embedded.Tags = this.Tags.map(tag => tag.representation(req));
     }
 
     if (!Object.keys(resource._embedded).length) {
