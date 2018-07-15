@@ -6,13 +6,15 @@ module.exports = {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER.UNSIGNED,
       },
       ServiceId: {
-        type: Sequelize.INTEGER
+        allowNull: false,
+        type: Sequelize.INTEGER.UNSIGNED,
       },
       TagId: {
-        type: Sequelize.INTEGER
+        allowNull: false,
+        type: Sequelize.INTEGER.UNSIGNED,
       },
       createdAt: {
         allowNull: false,
@@ -21,7 +23,12 @@ module.exports = {
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE
-      }
+      },
+    });
+
+    queryInterface.addConstraint('ServiceTags', ['ServiceId', 'TagId'], {
+      type: 'unique',
+      name: 'service_tag_unique_key'
     });
   },
   down: (queryInterface, Sequelize) => {

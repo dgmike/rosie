@@ -1,20 +1,23 @@
 'use strict';
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('Services', {
+    queryInterface.createTable('Services', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER.UNSIGNED
+        type: Sequelize.INTEGER.UNSIGNED,
       },
       name: {
         type: Sequelize.STRING,
         allowNull: false,
       },
+      slug: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
       ServiceTypeId: {
         type: Sequelize.INTEGER.UNSIGNED,
-        allowNull: false,
         onDelete: 'CASCADE',
         references: {
           model: 'ServiceTypes',
@@ -27,6 +30,11 @@ module.exports = {
       description: {
         type: Sequelize.TEXT
       },
+      registered: {
+        type: Sequelize.BOOLEAN,
+        comment: 'Defines if it is registered on system or just created by required dependency',
+        default: false,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
@@ -35,6 +43,11 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE
       }
+    });
+
+    queryInterface.addConstraint('Services', ['slug'], {
+      type: 'unique',
+      name: 'slug_unique_key'
     });
   },
   down: (queryInterface, Sequelize) => {

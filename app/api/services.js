@@ -103,7 +103,7 @@ router.get('/services/:id', async (req, res, next) => {
 
   const result = await Service.findById(
     req.params.id,
-    { include: [ServiceType, Tag] }
+    { include: [ServiceType, Tag, 'Dependencies'] }
   );
 
   if (!result) {
@@ -145,9 +145,85 @@ router.put('/services/:id', async (req, res) => {
   }
 });
 
+router.get('/services/:id/tree', async (req, res) => {
+  const { Service, ServiceType, ServiceDependency } = req.app.locals.models;
+  const service = await Service.findById(req.params.id, { attributes: ['id', 'name'], include: [ServiceType] });
+
+  if (!service) {
+    res.status(404).json({ status: 404 });
+    return false;
+  }
+
+  let dependencies = await service.getDependencies({
+    attributes: ['id', 'name'],
+    include: [
+      ServiceType,
+      {
+        model: Service,
+        as: 'Dependencies',
+        include: [ServiceType],
+      },
+    ]
+  });
+
+  const result = {
+    id: service.id,
+    name: service.name,
+    type: service.ServiceType.name,
+    children: dependencies.map(dep => ({
+      id: `${service.id}/${dep.id}`,
+      name: dep.name,
+      type: dep.ServiceType.name,
+      children: (dep.Dependencies || []).map((dep2) => ({
+        id: `${service.id}/${dep.id}/${dep2.id}`,
+        name: dep2.name,
+        type: dep2.ServiceType.name,
+        children: [],
+      })),
+    })),
+  };
+
+  return res.json(result);
+});
+
+router.get('/services/:id/files', async (req, res) => {
+  const { Service } = req.app.locals.models;
+  const result = await Service.findById(req.params.id);
+
+  if (!result) {
+    res.status(404).json({ status: 404 });
+    return false;
+  }
+
+  let files;
+
+  try {
+    files = await result.getFiles();
+    res.json(
+      {
+        resourceType: 'ServiceFiles',
+        total: files.length,
+        _links: {
+          self: { href: url(req, `/services/${req.params.id}/files`) },
+          service: { href: url(req, `/services/${req.params.id}`) },
+          services: { href: url(req, '/services') },
+        },
+        _embedded: {
+          files: files.map(file => ({
+            url: file.toJSON().req.url,
+            file: file.toJSON().req.url.replace(/.*\/(.*)$/, '$1'),
+            text: file.text
+          })),
+        }
+      }
+    );
+  } catch (err) {
+    res.json(err);
+  }
+});
+
 router.delete('/services/:id', async (req, res) => {
   const { Service, ServiceType } = req.app.locals.models;
-  const { body } = req;
   const result = await Service.findById(req.params.id);
 
   if (!result) {

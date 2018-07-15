@@ -13,11 +13,26 @@ module.exports = {
         return result.map((item) => {
           return new Array(chance.natural({ min: 0, max: 10 })).fill(true)
             .map(() => {
+              const name = chance.city();
+              const project = [
+                'crmintegration/middleware',
+                'crmintegration/queueprocessor',
+                'crmintegration/scheduler',
+                'x-force/oprah',
+                'x-force/api-product',
+                'x-force/api-empresas',
+                'x-force/apis-usuarios',
+                'x-force/apis-contracts',
+                'x-force/api_vaga',
+              ];
+
               return {
-                name: chance.city(),
+                name,
+                slug: name.toLowerCase().replace(/[^a-z0-9]/g, '-'),
                 description: chance.paragraph(),
-                source: 'https://gitlab.devel/x-force/project',
+                source: `https://gitlab.devel/${chance.pick(project)}`,
                 serviceTypeId: item.id,
+                registered: true,
                 createdAt: now,
                 updatedAt: now,
               };

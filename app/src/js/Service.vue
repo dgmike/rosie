@@ -9,7 +9,8 @@
 
       <mdc-card class="error" v-if="error">
           <mdc-card-text>
-              {{ error }}
+            {{ error.message }}
+            <pre>{{ error.stack }}</pre>
           </mdc-card-text>
       </mdc-card>
 
@@ -29,7 +30,7 @@
                 </mdc-layout-inner-grid>
                 <mdc-layout-inner-grid>
                   <mdc-layout-cell desktop="2" class="text-right">Tipo:</mdc-layout-cell>
-                  <mdc-layout-cell desktop="10">{{resource._embedded.ServiceType.name}}</mdc-layout-cell>
+                  <mdc-layout-cell desktop="10">{{resource._embedded && resource._embedded.ServiceType && resource._embedded.ServiceType.name}}</mdc-layout-cell>
                 </mdc-layout-inner-grid>
                 <mdc-layout-inner-grid>
                   <mdc-layout-cell desktop="2" class="text-right">Código-fonte:</mdc-layout-cell>
@@ -39,7 +40,7 @@
                   <mdc-layout-cell desktop="2" class="text-right">Etiquetas:</mdc-layout-cell>
                   <mdc-layout-cell desktop="10">
                     <mdc-list class="tag-list">
-                      <mdc-list-item class="tag-list-item" v-for="tag in resource._embedded.Tags" v-bind:key="tag.id">
+                      <mdc-list-item class="tag-list-item" v-for="tag in (resource._embedded && resource._embedded.Tags)" v-bind:key="tag.id">
                         {{tag.name}}
                       </mdc-list-item>
                     </mdc-list>
@@ -50,8 +51,21 @@
                   <mdc-layout-cell desktop="10">{{resource.description}}</mdc-layout-cell>
                 </mdc-layout-inner-grid>
               </mdc-body>
-              <div v-if="selectedTab==1">Aba 1</div>
-              <div v-if="selectedTab==2">Aba 2</div>
+              <div v-if="selectedTab==1">
+                <mdc-title>Arquivos</mdc-title>
+                <div v-for="file in files" :key="file.file">
+                  <mdc-body>
+                    <a :href="file.url" target="_blank">{{file.file}}</a>
+                  </mdc-body>
+                  <textarea class="file-content" readonly>{{file.text}}</textarea>
+                </div>
+              </div>
+              <transition @enter="showDependencyGraph">
+                <div v-if="selectedTab==2">
+                  <mdc-title>Relacionamentos</mdc-title>
+                  <div id="dependencyGraph"></div>
+                </div>
+              </transition>
             </mdc-card-text>
           </mdc-card>
         </mdc-layout-cell>
@@ -59,6 +73,12 @@
           <mdc-card>
             <mdc-card-text>
               <mdc-title>Dependencias</mdc-title>
+
+              <mdc-list bordered interactive>
+                <mdc-list-item>mysql-db.lib</mdc-list-item>
+                <mdc-list-item>sinon</mdc-list-item>
+                <mdc-list-item>chai</mdc-list-item>
+              </mdc-list>
             </mdc-card-text>
           </mdc-card>
         </mdc-layout-cell>
@@ -68,6 +88,10 @@
 </template>
 
 <script>
+import dependencyGraph from './dependencyGraph';
+import d3 from 'd3/d3';
+import $ from 'jquery';
+
 export default {
   data() {
     return {
@@ -76,6 +100,8 @@ export default {
       error: null,
       tabs: [],
       selectedTab: null,
+      files: [],
+      dependencyData: {},
     };
   },
   created() {
@@ -90,35 +116,112 @@ export default {
   methods: {
     fetchData() {
       const that = this;
-      that.error = null;
-      that.resources = null;
-      that.loading = true;
 
-      fetch(`/api/services/${this.$route.params.id}`)
-        .then(res => res.json())
-        .then(function (json) {
-          that.loading = false;
-          that.resource = json;
-          that.$store.state.page.title = `Serviço: ${json.name}`;
-          that.tabs = [
-            'Dados gerais',
-            'Arquivos',
-            'Consultório',
-            'Monitoria',
-            'Responsáveis',
-          ];
-          that.selectedTab = 0;
-        })
-        .catch(function (err) {
-          that.error = err;
-        });
+      that.loading = true;
+      that.resource = null;
+      that.error = null;
+      that.tabs = [];
+      that.selectedTab = null;
+      that.files = [];
+      that.dependencyData = {};
+      that.$store.state.page.title = 'Serviço...';
+
+      Promise.all([
+        fetch(`/api/services/${this.$route.params.id}`),
+        fetch(`/api/services/${this.$route.params.id}/files`),
+        fetch(`/api/services/${this.$route.params.id}/tree`),
+      ])
+      .then(results => Promise.all(results.map(result => result.json())))
+      .then(([service, files, tree]) => {
+        that.loading = false;
+        that.files = files._embedded && files._embedded.files;
+        that.resource = service;
+        that.$store.state.page.title = `Serviço: ${service.name}`;
+        that.dependencyData = tree;
+        that.tabs = [
+          'Dados gerais',
+          'Arquivos',
+          'Relacionamentos',
+          'Consultório',
+          'Monitoria',
+          'Responsáveis',
+        ];
+        that.selectedTab = 0;
+      })
+      .catch(function (err) {
+        that.error = err;
+      });
     },
     changeTab(idx) {
       this.selectedTab = idx;
-    }
+    },
+    goToService(service) {
+      this.$router.push({
+        name: 'service',
+        params: {
+          id: service.id,
+        },
+      });
+    },
+    showDependencyGraph() {
+      const that = this;
+      $('#dependencyGraph').html('<svg/>');
+      var svg = d3.select('#dependencyGraph svg');
+
+      dependencyGraph(svg, this.dependencyData, (event) => {
+        const id = event.id.split('/').pop();
+        that.$router.push({
+          name: 'service',
+          params: { id },
+        });
+      });
+    },
   },
 };
 </script>
+
+<style lang="scss">
+#dependencyGraph {
+  .node circle {
+    cursor: pointer;
+    fill: #fff;
+    stroke: steelblue;
+    stroke-width: 1.5px;
+  }
+
+  .node text {
+    font-size: 11px;
+    font-family: Menlo, Monaco, sans-serif;
+  }
+
+  path.link {
+    fill: none;
+    stroke: #ccc;
+    stroke-width: 1.5px;
+
+    &.database {
+      stroke: blue;
+    }
+
+    &.job {
+      stroke: grey;
+      stroke-dasharray: 0,2 1;
+    }
+
+    &.service {
+      stroke: green;
+    }
+
+    &.api {
+      stroke: lightgreen;
+    }
+
+    &.app {
+      stroke: purple;
+    }
+  }
+}
+</style>
 
 <style lang="scss" scoped>
 .content {
@@ -134,6 +237,15 @@ export default {
 
   .text-right {
     text-align: right;
+  }
+
+  .file-content {
+    font-family: monospace;
+    width: 100%;
+    box-sizing: border-box;
+    height: 12rem;
+    padding: .5rem;
+    resize: none;
   }
 }
 </style>

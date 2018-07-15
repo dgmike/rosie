@@ -6,12 +6,14 @@ module.exports = {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER.UNSIGNED,
       },
       slug: {
+        allowNull: false,
         type: Sequelize.STRING
       },
       name: {
+        allowNull: false,
         type: Sequelize.STRING
       },
       createdAt: {
@@ -22,6 +24,11 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE
       }
+    });
+
+    queryInterface.addConstraint('Tags', ['slug'], {
+      type: 'unique',
+      name: 'slug_unique_key'
     });
   },
   down: (queryInterface, Sequelize) => {

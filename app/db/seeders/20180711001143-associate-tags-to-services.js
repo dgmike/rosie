@@ -36,9 +36,8 @@ module.exports = {
         }, []);
       })
       .then((data) => {
-        console.log(data)
-        return queryInterface.bulkInsert('ServiceTags', data);
-      })
+        queryInterface.bulkInsert('ServiceTags', data);
+      });
   },
 
   down: (queryInterface, Sequelize) => {
